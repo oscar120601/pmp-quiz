@@ -529,6 +529,7 @@
         <button class="pill-btn" data-scope="aionly">AI補充練習 (<span id="aiCount">0</span>)</button>
         <button class="pill-btn" data-scope="evdrill">EV計算特訓 (<span id="evCount">0</span>)</button>
         <button class="pill-btn" data-scope="pmsuccess">長宏模擬考90題 (<span id="pmsCount">0</span>)</button>
+        <button class="pill-btn" data-scope="pmsuccess_wrong">長宏模考錯題 (<span id="pmsWrongCount">0</span>)</button>
         <button class="pill-btn" data-scope="wrong">只考錯題 (<span id="wrongCount">0</span>)</button>
         <button class="pill-btn" data-scope="star">高頻/易混淆★ (<span id="starCount">0</span>)</button>
         <button class="pill-btn" data-scope="custom">自訂章節</button>
@@ -549,7 +550,14 @@
       <p style="font-size:12.5px;color:#555;line-height:1.7;margin:0;">
       這批題目來自你上傳的「長宏模擬考_90題」(PMSuccess 平台)，屬於第三方真實模考題庫，用
       <span style="background:#e5eef7;color:#1f5c8b;padding:1px 6px;border-radius:8px;font-weight:700;">外部模考</span>
-      標籤清楚標示，與原始「題目庫」和「AI補充練習」都不同來源，答錯的 34 題已經自動納入「加強複習」範圍。
+      標籤清楚標示，與原始「題目庫」和「AI補充練習」都不同來源，答錯的 34 題已經自動納入「加強複習」範圍，也可以用「長宏模考錯題」單獨反覆練習這 34 題。
+      </p>
+    </div>
+
+    <div class="card-box" id="pmsWrongInfo" style="display:none;">
+      <h2>長宏模考錯題說明</h2>
+      <p style="font-size:12.5px;color:#555;line-height:1.7;margin:0;">
+      這 34 題是你在「長宏模擬考90題」中答錯的題目，獨立出來讓你可以只針對這批題目反覆練習，不會被其他題庫的題目稀釋。答對後不會自動從這裡移除，下次重新整理頁面仍會看到完整 34 題，方便你多輪複習到熟練為止。
       </p>
     </div>
 
@@ -713,6 +721,7 @@ const QUIZ_DATA = [{"id": 0, "lesson": "2", "lessonTitle": "第2課．建立基�
   document.getElementById('aiCount').textContent = QUIZ_DATA.filter(q => q.aiGenerated).length;
   document.getElementById('evCount').textContent = QUIZ_DATA.filter(q => q.topic.includes('EV計算特訓')).length;
   document.getElementById('pmsCount').textContent = QUIZ_DATA.filter(q => q.externalSource).length;
+  document.getElementById('pmsWrongCount').textContent = QUIZ_DATA.filter(q => q.externalSource && q.wasWrong).length;
 
   scopeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -722,6 +731,7 @@ const QUIZ_DATA = [{"id": 0, "lesson": "2", "lessonTitle": "第2課．建立基�
       lessonBox.style.display = (scopeMode === 'custom') ? 'block' : 'none';
       reinforceInfo.style.display = (scopeMode === 'reinforce' || scopeMode === 'aionly' || scopeMode === 'evdrill') ? 'block' : 'none';
       document.getElementById('pmsInfo').style.display = (scopeMode === 'pmsuccess') ? 'block' : 'none';
+      document.getElementById('pmsWrongInfo').style.display = (scopeMode === 'pmsuccess_wrong') ? 'block' : 'none';
       if (scopeMode === 'evdrill') {
         orderMode = 'sequential';
         orderBtns.forEach(b => b.classList.toggle('active', b.dataset.order === 'sequential'));
@@ -746,6 +756,7 @@ const QUIZ_DATA = [{"id": 0, "lesson": "2", "lessonTitle": "第2課．建立基�
     else if (scopeMode === 'aionly') pool = QUIZ_DATA.filter(q => q.aiGenerated);
     else if (scopeMode === 'evdrill') pool = QUIZ_DATA.filter(q => q.topic.includes('EV計算特訓'));
     else if (scopeMode === 'pmsuccess') pool = QUIZ_DATA.filter(q => q.externalSource);
+    else if (scopeMode === 'pmsuccess_wrong') pool = QUIZ_DATA.filter(q => q.externalSource && q.wasWrong);
     else if (scopeMode === 'custom') pool = QUIZ_DATA.filter(q => selectedLessons.has(q.lesson) && !q.aiGenerated && !q.externalSource);
     else pool = QUIZ_DATA.filter(q => !q.aiGenerated && !q.externalSource);
     return pool;
